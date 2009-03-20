@@ -1,0 +1,1 @@
+/usr/local/php5/bin/php -q -c php.ini devel.php $@

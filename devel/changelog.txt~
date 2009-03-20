@@ -1,0 +1,138 @@
+======== 20070803 ========
+
+* Various cosmetic/stylesheet improvements.
+* Colorized the state of the search buttons.
+* Display counts of matching programs.
+
+
+
+
+======== 20070724 ========
+
+* Added support for optional titlebar.php file.
+* Re-enabled javascript to focus query input field.
+
+
+
+
+======== 20070723 ========
+
+* Always purge all old packages on rebuild.
+* Minor tweaks as part of installation at recipes.gobolinux.org.
+* Fixed GROUP BY sql on 100 latest recipes.
+* Tweaked Description parser.
+
+
+
+
+======== 20070420 ========
+
+* No 'gentoo' direcotry => hide Gentoo button
+* No 'gentoo' direcotry => do not index gentoo
+* Updated 'By' column with span tooltips of authors' full names
+* Links to favicon and stylesheet now point to the local (relative) directory
+* Removed '#! /path/to/php ...' from beginning of file
+
+
+
+
+======== 20070409 ========
+
+* Search Gentoo ebuilds by name
+* Display recipe authors
+* Tweaked search buttons so their "state" "presists".
+* Added Gobo favicon (20070410)
+
+* TODO: I thinking about adding recipe diff.
+
+
+
+
+======== 20070328 ========
+
+* Recipes sorted by version, not mtime.
+* Tweaked HTML page title
+* Added description search (most recent version of each recipe only)
+* Deleted recipes now deleted from the database
+* (internal:) renamed functions
+* print usage (help) on command line
+
+* TODO: factor out '#! ...' first line
+* TODO: print timestamp at beginning and end of rsync, etc.
+
+
+
+
+======== 20070309 ========
+
+* Minor URL encoding (plus sign) glitch fixed.
+
+
+
+
+======== 20070305 ========
+
+* Minor SQL related bug fix
+
+
+
+
+======== 20070304.1 ========
+
+* Added package search functionality.
+* Automatic hourly updating/reindexing re-activated.
+
+If you want your packages added to the search database, please do the
+following on your webserver.  This will allow my Recipe/Package
+Browser to index your packages.
+
+$ cd <package-dir>
+$ wget http://gobo.dreamhosters.com/recipes/find.inc
+$ mv find.inc .find.php
+
+Email me a nice note asking me to add your packages to the database.
+Include the URL to your .find.php file.  mpb.mail@gmail.com
+
+
+
+
+======== 20070304.0 ========
+
+* Switched backend from text files to SQLite
+* Added fields: Size, www, Summary
+* Indented recipe file viewer
+
+Possible future improvements:
+
+* Search packages and recipies
+* Rewrite stylesheet to clean up fonts, etc.
+
+
+
+
+======== 20070228 ========
+
+Initial version of browser launched.
+
+Differences from official Gobo recipe browser:
+
+* Uppercase letters in queries do not cause 'Invalid character' errors
+* Sort by name or by date
+* Consistent link appearance - underline *only* on hover
+* Recipe age in days instead of long timestamps
+* Ability to view files inside recipes with a single click
+* Dependency cross linking
+* ALT+S accesskey
+
+Possible future improvements:
+
+* Diff across recipe versions
+* Recursive discovery of all dependencies
+* Generate valid XHTML
+* Recipe status - age and success/failure of last Compile
+* Summary statistics of recipe age/activity, etc.
+* Code cleanup/refactorization
+
+Known bugs
+
+* If two recipes have the same mtime, their order is undefined.
