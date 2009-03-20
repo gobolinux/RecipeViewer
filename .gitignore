@@ -1,5 +1,7 @@
 _darcs
 cache
-recipes
 deleted-recipes
+recipes
 sqlite.db*
+
+*~
