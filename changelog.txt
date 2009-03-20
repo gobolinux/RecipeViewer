@@ -1,9 +1,9 @@
 ======== 20090319 ========
 
-* Changed recipe source from calica.com to kundor.org
+* Changed rsync recipe source from calica.com to kundor.org.
 * Changed version control system from darcs to git.
     note: I simply imported the current tree into git.
-          I did not try to convert the history.
+          I did not convert the history.
 
 
 

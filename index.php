@@ -534,7 +534,8 @@ EOT;
 
     print "recipe viewer rsync beginning at ". date ('r'). "\n";
 
-    $recipes = 'www.calica.com::gobolinux-recipes';
+    // $recipes = 'www.calica.com::gobolinux-recipes';
+    $recipes = 'kundor.org::gobolinux-recipes';
     $packages = 'www.calica.com::gobolinux-packages';
 
     if (is_link ('recipes')) {
