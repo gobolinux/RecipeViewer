@@ -10,11 +10,6 @@ please do one of the following:</p>
 <li>Email a bug report to <a
 href='mailto:mpb.mail@gmail.com'>mpb.mail@gmail.com</a>.</li>
 
-<p>or</p>
-
-<li>Report the bug in the "gobolinux.org" category at <a
-href='http://bugs.gobolinux.org'>bugs.gobolinux.org</a>.</li>
-
 </ul>
 
 <p>If you have general <b>suggestions or feature requests</b> for the

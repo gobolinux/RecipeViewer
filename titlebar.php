@@ -22,10 +22,6 @@
 ><img  border="0" src="http://www.gobolinux.org/images/icon_recipes.png"
   class="TopIcon" alt="Recipes" title="Recipes"/></a>
 
-<a href="http://www.gobolinux.org/?page=packages"
-><img  border="0" src="http://www.gobolinux.org/images/icon_packages.png"
-  class="TopIcon" alt="Packages" title="Packages"/></a>
-
 <a href="http://www.gobolinux.org/?page=screenshots"
 ><img  border="0" src="http://www.gobolinux.org/images/icon_screenshots.png"
   class="TopIcon" alt="Screenshots" title="Screenshots"/></a>
