@@ -295,7 +295,7 @@ EOT;
   function completePackage ($o) {    // ----------------------- completePackage
 
     if (($href = $o->source) == 'official') {
-      $href = 'http://gobo.calica.com/packages/official/'; }
+      $href = 'http://gobolinux.org/packages/official/'; }
 
     $o->ht_name = array_pop (explode ('/', $o->name)). " $o->version";
     $o->ht_bz2 = "<a href='$href$o->file'>bz2</a>";
@@ -411,8 +411,9 @@ EOT;
     $html[] = $this->renderRow ($info);
     $html[] = "<tr><td colspan=7 style='padding-left:60px;'>\n";
 
-    $href = "http://gobolinux.org/websvn/dir.php?".
-      "repname=recipes&path=/revisions/$info->name/$info->version/";
+#    $href = "http://gobolinux.org/websvn/dir.php?".
+    $href = "http://svn.gobolinux.org/recipes".
+      "/revisions/$info->name/$info->version/";
     $html[] = "<a href='$href'>view subversion entry</a> |\n";
     $html[] = "<a href='$info->url'>download recipe.bz2 file</a>\n";
 
@@ -535,8 +536,11 @@ EOT;
     print "recipe viewer rsync beginning at ". date ('r'). "\n";
 
     // $recipes = 'www.calica.com::gobolinux-recipes';
-    $recipes = 'kundor.org::gobolinux-recipes';
-    $packages = 'www.calica.com::gobolinux-packages';
+    /// $recipes = 'kundor.org::gobolinux-recipes';
+    $recipes = '/home/gobolinux/gobolinux.org/recipe-store/';
+    $packages = '/home/gobolinux/gobolinux.org/packages';
+    //$recipes = 'gytha.org::gobolinux-recipes';
+    //$packages = 'gytha.org::gobolinux-packages';
 
     if (is_link ('recipes')) {
       print "skipping 'recipes' (as it is a symlink, not directory)\n"; }
@@ -544,10 +548,10 @@ EOT;
       if (!is_dir ('recipes'))  { mkdir ('recipes', 0755); }
       $command =
 	"cd recipes  &&  ".
-	"rsync -abv --delete --backup-dir=../deleted-recipes $recipes ."; 
+	"rsync -abvr --delete --backup-dir=../deleted-recipes $recipes .";
       passthru ($command); }
 
-    $command = "rsync $packages/official/ > official";
+    $command = "rsync -r $packages/official/ > official";
     passthru ($command, $ret);
 
     $this->dbsync ('recipes', 'r');

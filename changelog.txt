@@ -1,3 +1,18 @@
+
+
+======== 20131210 ========
+
+* Received request for assistance from Lucas
+* Discovered that on 20100101 someone created an update.cgi file
+  that replaced my cronjob?
+* r/index.php was last edited on 20130826 (not by me)
+    in it, the rsync url had been changed several times
+* noticed that the gobo_recipes user can no longer read /home/gobolinux
+    which is the current source for rsyncing
+* reported findings to Lucas, made no changes
+* -mpb
+
+
 ======== 20090319 ========
 
 * Changed rsync recipe source from calica.com to kundor.org.
