@@ -54,7 +54,6 @@ class RecipeViewer {    // --------------------------------------- RecipeViewer
 <b>in</b>
 <input type=submit name='search' value='$search' style='display:none;'>
 <input type=submit name='search' value='Recipes' $style[Recipes]>
-<input type=submit name='search' value='Packages' $style[Packages]>
 <input type=submit name='search' value='Descriptions' $style[Descriptions]>
 $gentooButton
 <br/>
@@ -149,12 +148,6 @@ EOT;
 	    "order by name, rank desc ; " );
 	break;
 
-      case 'Packages':
-	$select = $this->db->prepare
-	  ( "select 'Packages' as 'table', * from Packages where name like ? ".
-	    "order by name, rank desc ; " );
-	break;
-
       case 'Descriptions':
 	$select = $this->db->prepare
 	  ( "select  'Recipes' as 'table', * ".
@@ -177,17 +170,14 @@ EOT;
       $prev = $o->name; }
 
     if ( ($count = sizeof (@$rows)) == 0) {
-      if (in_array ($table, array ('Recipes', 'Descriptions'))) {
-	print "<h4>Zero programs found.</h4>\n"; }
-      else  { print "<h4>Zero packages found.</h4>\n"; } }
+      print "<h4>Zero programs found.</h4>\n";
+    }
 
     else {
-      if (in_array ($table, array ('Recipes', 'Descriptions'))) {
-	print "<p style='color:#888'>$count programs found.  ";
-	print "Select a program to see all versions.</p>\n";
-	print "</p>\n"; }
-      else {
-	print "<p style='color:#888'>$count packages found.</p>\n"; }
+
+      print "<p style='color:#888'>$count programs found.  ";
+      print "Select a program to see all versions.</p>\n";
+      print "</p>\n";
 
       print "<table>\n";
       print $this->tableTitleRow ();
@@ -212,17 +202,7 @@ EOT;
 	$html[] = '</td><td width="90%">'.      'Summary';
 	$html[] = "</td></tr>\n";
 	break;
-
-      case 'Packages':
-	$html[] = '<tr class="search-title">';
-	$html[] = '<td>'.                       'Program';
-	$html[] = '</td><td>'.                  'Platform';
-	$html[] = '</td><td>';                  // Get
-	$html[] = '</td><td align="right">'.    "$age";
-	$html[] = '</td><td align="right">'.    'Size';
-	$html[] = '</td><td>'.                  'Provider';
-	$html[] = "</td></tr>\n";
-	break; }
+      }
 	
     return join ($html); }
 
@@ -291,17 +271,6 @@ EOT;
     return $o; }
 
 
-  function completePackage ($o) {    // ----------------------- completePackage
-
-    if (($href = $o->source) == 'official') {
-      $href = 'http://gobolinux.org/packages/official/'; }
-
-    $o->ht_name = array_pop (explode ('/', $o->name)). " $o->version";
-    $o->ht_bz2 = "<a href='$href$o->file'>bz2</a>";
-    $o->ht_source = "<a href='$href'>$href</a>";
-    return $o; }
-
-
   function complete ($o) {    // ------------------------------------- complete
 
     static $time;  $time or $time = time ();
@@ -320,7 +289,6 @@ EOT;
     switch ($o->table) 
       {
       case 'Recipes':   return $this->completeRecipe  ($o);
-      case 'Packages':  return $this->completePackage ($o);
       default:  die ('dying in default case'); } }
 
 
@@ -336,23 +304,10 @@ EOT;
     return join ($html); }
 
 
-  function renderRowPackage ($o) {    // --------------------- renderRowPackage
-    $o = $this->complete ($o);
-    $html[] = "<tr><td>\n".                 "$o->ht_name";
-    $html[] = "</td><td align=center>\n".   "$o->ht_platform";
-    $html[] = "</td><td>\n".                "$o->ht_bz2";
-    $html[] = "</td><td align=right>\n".    "$o->ht_age";
-    $html[] = "</td><td align=right>\n".    "$o->ht_size";
-    $html[] = "</td><td>\n".                "$o->ht_source";
-    $html[] = "</td></tr>\n";
-    return join ($html); }
-
-
   function renderRow ($o) {    // ----------------------------------- renderRow
     switch ($o->table)
       {
-      case 'Recipes':  return $this->renderRowRecipe ($o);
-      case 'Packages':  return $this->renderRowPackage ($o); } }
+      case 'Recipes':  return $this->renderRowRecipe ($o); } }
 
 
   function crossLinkCallback ($matches) {    // ------------- crossLinkCallback
@@ -464,99 +419,10 @@ EOT;
 
     if (@$_GET['list'])  { $this->listVersions (); }
 
-    elseif ( @$_GET['name']  ||
-	     @$_GET['search'] == 'Packages' ) {
+    elseif ( @$_GET['name'] ) {
       $this->search (); }
 
     else  { $this->listRecent (); } }
-
-
-  function rsync2list ($source) {    // ---------------------------- rsync2list
-
-    $this->chdir ();
-
-    if ($source[0] == '#')  { return; }
-    print "source: $source\n";
-
-    $this->db->beginTransaction ();
-
-    $insert = $this->db->prepare
-      ( 'insert  into Packages (source, file) values (?,?) ; ' );
-
-    $update = $this->db->prepare
-      ( 'update  Packages '.
-	'set     name=?, version=?, time=?, size=? '.
-	'where   source=? and file=? ; ' );
-
-    $url =  $source == 'official'  ?  'official'  :  "${source}.find.php"  ;
-
-    $in = fopen ($url, 'r');
-    while ($line = fgets ($in)) {
-      $split = preg_split ('/\s+/', trim ($line));
-      switch (sizeof ($split))
-	{
-        case 5:
-	  list ($perms, $size, $date, $time, $file) = $split;
-	  $time = strtotime ("$date $time");
-	  break;
-
-	case 3:
-	  list ($time, $size, $file) = $split;
-	  break;
-
-	default:
-	  continue 2; }
-
-      $pattern = '#([^/]*?)--(.*?)--(\w+).tar.bz2$#';
-      if (preg_match ($pattern, $file, $matches)) {
-	list ($null, $name, $version, $platform) = $matches;
-	$insert->execute ( array ( $source, $file ) );
-	$update->execute ( array ( $name, $version, $time, $size,
-				   $source, $file ) );
-	;;; } }
-
-    $this->db->commit (); }
-
-
-  function pkgsync () {    // ----------------------------------------- pkgsync
-
-    $delete = $this->db->prepare ('delete  from Packages ;');
-    $delete->execute ();
-
-    $sources =  is_file ('sources')  ?
-      file ('sources')  :  array ('official') ;
-    foreach ($sources as $source)  { $this->rsync2list (trim ($source)); }
-
-    $this->setRanks (null, 'Packages'); }
-
-
-  function rsync () {    // --------------------------------------------- rsync
-
-    print "recipe viewer rsync beginning at ". date ('r'). "\n";
-
-    // $recipes = 'www.calica.com::gobolinux-recipes';
-    /// $recipes = 'kundor.org::gobolinux-recipes';
-    $recipes = '/home/gobolinux/gobolinux.org/recipe-store/';
-    $packages = '/home/gobolinux/gobolinux.org/packages';
-    //$recipes = 'gytha.org::gobolinux-recipes';
-    //$packages = 'gytha.org::gobolinux-packages';
-
-    if (is_link ('recipes')) {
-      print "skipping 'recipes' (as it is a symlink, not directory)\n"; }
-    else {
-      if (!is_dir ('recipes'))  { mkdir ('recipes', 0755); }
-      $command =
-	"cd recipes  &&  ".
-	"rsync -abvr --delete --backup-dir=../deleted-recipes $recipes .";
-      passthru ($command); }
-
-    $command = "rsync -r $packages/official/ > official";
-    passthru ($command, $ret);
-
-    $this->dbsync ('recipes', 'r');
-    $this->pkgsync ();
-
-    print "recipe viewer rsync success at ". date ('r'). "\n"; }
 
 
   function dbcreate () {    // --------------------------------------- dbcreate
@@ -854,8 +720,6 @@ EOT;
       case 'dbcreate':
       case 'dbgentoo':
       case 'fixage':
-      case 'pkgsync':
-      case 'rsync':
       case 'setDescriptions':
       case 'setRanks':
 	$this->$command (); 
@@ -872,10 +736,6 @@ usage: $argv[0] <command>
 commands:
   dbcreate  create the sqlite.db file and create/update its schema
   dbsync    index recipes directory (also calls dbcreate)
-  pkgsync   index package sources
-            (default source: rsync www.calica.com::gobolinux-packages)
-  rsync     pull recipes directory in from rsync www.calica.com
-            (also calls dbsync and pkgsync)
 
   setDescriptions  rebuild description table
   setRanks         rebuild recipe version rankings
@@ -883,7 +743,6 @@ commands:
 Note: you can easily rebuild the database from scratch as follows:
   rm sqlite.db
   $argv[0] dbsync
-  $argv[0] pkgsync
 
 EOT;
 	exit (1);
