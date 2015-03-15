@@ -6,7 +6,6 @@
 // Use at your own risk!
 // Version: 20070803
 
-
 // Is it a bug that '#! php -c php.ini -q' works but '#! php -q -c php.ini'
 // does not?  No - it is a side effect of #! concatinating all the args.
 
