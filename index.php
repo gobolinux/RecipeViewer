@@ -411,9 +411,9 @@ EOT;
     $html[] = "<tr><td colspan=7 style='padding-left:60px;'>\n";
 
 #    $href = "http://gobolinux.org/websvn/dir.php?".
-    $href = "http://svn.gobolinux.org/recipes".
-      "/revisions/$info->name/$info->version/";
-    $html[] = "<a href='$href'>view subversion entry</a> |\n";
+    $href = "https://github.com/gobolinux/Recipes/tree/master/revisions/".
+      "$info->name/$info->version";
+    $html[] = "<a href='$href'>view entry at GitHub</a> |\n";
     $html[] = "<a href='$info->url'>download recipe.bz2 file</a>\n";
 
     $html[] = "</td></tr><tr><td colspan=7 style='padding-left:60px;'>\n";
